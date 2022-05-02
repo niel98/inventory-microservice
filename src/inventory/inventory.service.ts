@@ -12,8 +12,6 @@ export class InventoryService {
 
     async handleCreateInventory(data: any) {
         try {
-            //Check if the inventory exist
-
             return await this.inventoryModel.create({
                 ...data,
                 createdAt: new Date(),
@@ -50,18 +48,14 @@ export class InventoryService {
 
     async handleDeleteInventory(id: string) {
         try {
-            console.log({ id });
-            const inventory = await this.inventoryModel.findById(id);
-            console.log({ inventory })
-            if (inventory) {
-                return await this.inventoryModel.findOneAndDelete({ _id: id });
-            } else {
-                throw new Error('Inventory does not exist!')
-            }
+            const inventory = await this.inventoryModel.findOne({ _id: id });
+            if (!inventory) throw new Error('Inventory does not exist!')
+            
+            return await this.inventoryModel.findOneAndDelete({ _id: id });
+            
         } catch (error) {
             Logger.error(error);
             if (error.name === 'TypeError') throw new HttpException(error.message, 500)
-            return new HttpException(error.message, 400);
         }
     }
 }
